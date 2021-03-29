@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<string.h>
 int i;
 struct Employ_info{
   int id;
@@ -8,17 +9,23 @@ struct Employ_info{
   float salary;
 }e1;
 FILE *fp;
-void add_data();
-void show_data();
 void welcome_screen();
 void getting_id();
+void add_data();
+void show_data();
+void search_data();
+void search_data_by_name();
+void search_data_by_id();
+void search_data_by_position();
+void modify_data();
+void delete_data();
 void main(){
     i=0;
     welcome_screen();
     getting_id();
     int option;
-    while(option != 3){
-        printf("\n\n>>>1.Add records\n>>>2.Show all records\n>>>3.Exit\n>>>Option: ");
+    while(option != 6){
+        printf("\n\n>>>1.Add records\n>>>2.Show all records\n>>>3.Search\n>>>4.Modify\n>>>5.Delete\n>>>6.Exit\n>>>Option: ");
         scanf("%d",&option);
         switch (option)
         {
@@ -31,6 +38,18 @@ void main(){
             break;
 
             case 3:
+            search_data();
+            break;
+
+            case 4:
+            modify_data();
+            break;
+
+            case 5:
+            delete_data();
+            break;
+
+            case 6:
             break;
 
             default:
@@ -76,11 +95,6 @@ void show_data(){
         printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
         int j=1;
         while(fread(&e1,sizeof(e1),1,fp)){
-            // printf("ID       : %d\n",e1.id);
-            // printf("Name     : %s ",e1.first_name);
-            // printf("%s\n",e1.last_name);
-            // printf("Position : %s\n",e1.position);
-            // printf("Salary   : %.2f\n",e1.salary);
             printf("%-9d%-6d%-13s%-12s%-13s%.2f\n",j,e1.id,e1.first_name,e1.last_name,e1.position,e1.salary);
             printf("---------------------------------------------------------------------\n");
             j++;
@@ -107,3 +121,89 @@ void getting_id(){
         fclose(fp);
     }
 }
+void search_data(){
+    int search_option;
+    fp=fopen("employ.dat","rb");
+    if(fp==NULL){
+        printf("File is Empty");
+        fclose(fp);
+    }
+    else{
+        int loop_search=1;
+        while (loop_search==1){
+            printf("\nSearch by:\n");
+            printf(">>>1.Name\n>>>2.ID\n>>>3.Position\n>>>Option: ");
+            scanf("%d",&search_option);
+            switch (search_option){
+                case 1:
+                loop_search=2;
+                search_data_by_name();
+                break;
+
+                case 2:
+                loop_search=2;
+                search_data_by_id();
+                break;
+
+                case 3:
+                loop_search=2;
+                search_data_by_position();
+                break;
+
+                default:
+                printf("Invalid Input...");
+        
+            }
+        }    
+    }
+}
+void search_data_by_name(){
+    char search_name[10];
+    printf("Enter Name: ");
+    scanf("%s",search_name);
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("Sr.No.   ID    First Name   Last Name   Position     Salary\n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    int j=1;
+    while(fread(&e1,sizeof(e1),1,fp)){
+        if(strcmp(e1.first_name,search_name)==0){
+            printf("%-9d%-6d%-13s%-12s%-13s%.2f\n",j,e1.id,e1.first_name,e1.last_name,e1.position,e1.salary);
+            printf("-----------------------------------------------------------------------\n");
+            j++;
+        }
+    }
+}
+void search_data_by_id(){
+    int search_id;
+    printf("Enter ID: ");
+    scanf("%d",&search_id);
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("Sr.No.   ID    First Name   Last Name   Position     Salary\n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    int j=1;
+    while(fread(&e1,sizeof(e1),1,fp)){
+        if(e1.id==search_id){
+            printf("%-9d%-6d%-13s%-12s%-13s%.2f\n",j,e1.id,e1.first_name,e1.last_name,e1.position,e1.salary);
+            printf("-----------------------------------------------------------------------\n");
+            j++;
+        }
+    }
+}
+void search_data_by_position(){
+    char search_position[10];
+    printf("Enter Position: ");
+    scanf("%s",search_position);
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("Sr.No.   ID    First Name   Last Name   Position     Salary\n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    int j=1;
+    while(fread(&e1,sizeof(e1),1,fp)){
+        if(strcmp(e1.position,search_position)==0){
+            printf("%-9d%-6d%-13s%-12s%-13s%.2f\n",j,e1.id,e1.first_name,e1.last_name,e1.position,e1.salary);
+            printf("-----------------------------------------------------------------------\n");
+            j++;
+        }
+    }
+}
+void modify_data(){}
+void delete_data(){}
