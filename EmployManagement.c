@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<string.h>
 int i;
+int search_id;
 struct Employ_info{
   int id;
   char first_name[10];
@@ -17,7 +18,9 @@ void search_data();
 void search_data_by_name();
 void search_data_by_id();
 void search_data_by_position();
+void show_data_for_modification();
 void modify_data();
+void show_data_for_deletion();
 void delete_data();
 void main(){
     i=0;
@@ -42,11 +45,11 @@ void main(){
             break;
 
             case 4:
-            modify_data();
+            show_data_for_modification();
             break;
 
             case 5:
-            delete_data();
+            show_data_for_deletion();
             break;
 
             case 6:
@@ -100,7 +103,7 @@ void show_data(){
             j++;
         }
         fclose(fp);
-        }
+    }
 }
 void welcome_screen(){
     printf("\t\t\t################################################\n");
@@ -172,6 +175,7 @@ void search_data_by_name(){
             j++;
         }
     }
+    fclose(fp);
 }
 void search_data_by_id(){
     int search_id;
@@ -188,6 +192,7 @@ void search_data_by_id(){
             j++;
         }
     }
+    fclose(fp);
 }
 void search_data_by_position(){
     char search_position[10];
@@ -204,6 +209,113 @@ void search_data_by_position(){
             j++;
         }
     }
+    fclose(fp);
 }
-void modify_data(){}
-void delete_data(){}
+void show_data_for_modification(){
+    int data_exists=0;
+    fp=fopen("employ.dat","rb+");
+    if(fp==NULL){
+        printf("File is Empty");
+    }
+    else{
+        printf("Enter ID: ");
+        scanf("%d",&search_id);
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+        printf("Sr.No.   ID    First Name   Last Name   Position     Salary\n");
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+        while(fread(&e1,sizeof(e1),1,fp)){
+            if(e1.id==search_id){
+                printf("%-9d%-6d%-13s%-12s%-13s%.2f\n",1,e1.id,e1.first_name,e1.last_name,e1.position,e1.salary);
+                printf("----------------------------------------------------------------------\n");
+                data_exists=1;
+            }
+        }    
+    }
+    rewind(fp);
+    fflush(stdin);
+    if(data_exists==0){
+        printf("No data Matched for given ID");
+    }
+    else{
+        modify_data();
+    }
+}
+void modify_data(){
+    char ch;
+    printf("Do you want to Modify the following ID(y/n): ");
+    scanf("%c",&ch);
+    if(ch=='y' || ch=='Y'){
+        while(fread(&e1,sizeof(e1),1,fp)){
+            if(e1.id==search_id){
+                printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+                printf("Enter Employ Details\n");
+                printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+                printf("ID: %d\n",e1.id);
+                printf("FIRST NAME: ");
+                scanf("%s",e1.first_name);
+                printf("LAST NAME: ");
+                scanf("%s",e1.last_name);
+                printf("POSITION: ");
+                scanf("%s",e1.position);
+                printf("SALARY: ");
+                scanf("%f",&e1.salary);
+                fseek(fp,-sizeof(e1),SEEK_CUR);
+                fwrite(&e1,sizeof(e1),1,fp);
+                fclose(fp);
+            }
+        }
+    }
+}
+void show_data_for_deletion(){
+    int data_exists=0;
+    fp=fopen("employ.dat","rb+");
+    if(fp==NULL){
+        printf("File is Empty");
+    }
+    else{
+        printf("Enter ID: ");
+        scanf("%d",&search_id);
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+        printf("Sr.No.   ID    First Name   Last Name   Position     Salary\n");
+        printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+        while(fread(&e1,sizeof(e1),1,fp)){
+            if(e1.id==search_id){
+                printf("%-9d%-6d%-13s%-12s%-13s%.2f\n",1,e1.id,e1.first_name,e1.last_name,e1.position,e1.salary);
+                printf("----------------------------------------------------------------------\n");
+                data_exists=1;
+            }
+        }    
+    }
+    rewind(fp);
+    fflush(stdin);
+    if(data_exists==0){
+        printf("No data Matched for given ID");
+    }
+    else{
+        delete_data();
+    }
+}
+void delete_data(){
+    FILE *tp;
+    char ch;
+    printf("Do you want to delete the following ID(y/n): ");
+    scanf("%c",&ch);
+    if(ch=='y' || ch=='Y'){
+        tp=fopen("temp.dat","wb");
+        if(tp==NULL){
+            printf("File cannot be opened");
+        }
+        else{
+            while (fread(&e1,sizeof(e1),1,fp))
+            {
+                if(search_id!=e1.id){
+                    fwrite(&e1,sizeof(e1),1,tp);
+                }
+            }
+            fclose(fp);
+            fclose(tp);
+            remove("employ.dat");
+            rename("temp.dat","employ.dat");
+        }   
+    }
+}
